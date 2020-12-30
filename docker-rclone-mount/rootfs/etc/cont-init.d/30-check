@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv sh
+
+source /etc/colors.sh
+
+PREFFIX="[cont-init.d] $(s6-basename ${0}):"
+
+#check if the MOUNT_PATH is empty
+if [ "$(ls -A ${MOUNT_PATH})" ]; then
+    echo -e "${PREFFIX} ${Red}MOUNT_PATH folder not empty[ERROR]${Color_Off}"
+    #todo
+fi
+
+#check for other fsmounts, stop mounting if other MOUNT_PATH exists
+#mount | grep -c $MOUNT_PATH
+
+if grep -Eq ''$REMOTE_PATH'.*'$MOUNT_PATH'|'$MOUNT_PATH'.*'$REMOTE_PATH'' /proc/mounts; then
+    #exit container here
+    echo -e "${PREFFIX} ${Red}found other MOUNT_PATH in /proc/mounts${Color_Off}"
+    #cleanup MOUNT_PATH
+    exit 1
+else
+    echo -e "${PREFFIX} ${Green}MOUNT_PATH $MOUNT_PATH is ready${Color_Off}"
+    exit 0
+fi
